@@ -1,13 +1,20 @@
 from rest_framework import serializers
 from core.models import UserProfile
 from django.contrib.auth import authenticate
-from core.utils import get_jwt_payload, encode_jwt_payload
+from core.utils import jwt_get_payload, jwt_encode_payload
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
     """Serializes user input and authenticate"""
+    email = serializers.EmailField()
+    password = serializers.CharField(
+        write_only=True,
+        required=True,
+        style={
+            'input_type': 'password'
+        }
+    )
 
     class Meta:
-        model = UserProfile
         fields = ('email', 'password')
 
     def validate(self, attrs):
@@ -20,17 +27,16 @@ class LoginSerializer(serializers.ModelSerializer):
             user = authenticate(**credentials)
 
             if user:
-                payload = get_jwt_payload(user)
+                payload = jwt_get_payload(user)
 
                 return {
-                    'token': encode_jwt_payload(payload),
-                    'user': user
+                    'token': jwt_encode_payload(payload),
                 }
             else:
                 mssg = 'Invalid login credentials.'
                 raise serializers.ValidationError(mssg)
         else:
-            mssg = '"email" and "password" not included.'
+            mssg = 'Include "email" and "password".'
             raise serializers.ValidationError(mssg)
 
     

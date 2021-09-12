@@ -144,6 +144,8 @@ AUTHENTICATION_BACKENDS = [
 
 MY_JWT_CONF = {
     'JWT_ALGORITHM': 'RS256',
+    # 'JWT_ALGORITHM': 'HS256',
     'JWT_HEADER_PREFIX': 'Bearer',
     'JWT_EXPIRATION_TIME_DELTA': datetime.timedelta(seconds=600),
+    'JWT_PRIVATE_KEY': open('rara_api/secrets/private').read(),
 }
