@@ -4,12 +4,7 @@ from rest_framework.response import Response
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from core.serializers import LoginSerializer
-
-
-
-class JwtTokenAuthentication(TokenAuthentication):
-    keyword = 'Bearer'
-
+from core.authentication import JwtTokenAuthentication
 
 class LoginView(APIView):
     serializer_class = LoginSerializer
@@ -24,3 +19,15 @@ class LoginView(APIView):
             })
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserProfileView(APIView):
+    authentication_classes = [JwtTokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, format=None):
+        return Response({
+            'user_id': request.user.id,
+            'email': request.user.email,
+            'name': request.user.name,
+            'location': request.user.location,
+        })
