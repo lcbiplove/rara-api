@@ -144,9 +144,9 @@ AUTHENTICATION_BACKENDS = [
 
 MY_JWT_CONF = {
     'JWT_ALGORITHM': 'RS256',
-    # 'JWT_ALGORITHM': 'HS256',
     'JWT_HEADER_PREFIX': 'Bearer',
     'JWT_EXPIRATION_TIME_DELTA': datetime.timedelta(seconds=600),
-    'JWT_PRIVATE_KEY': open('rara_api/secrets/private').read(),
-    'JWT_PUBLIC_KEY': open('rara_api/secrets/private.pub').read(),
+    'JWT_PRIVATE_KEY_PATH': 'certs/private.pem',
+    'JWT_PUBLIC_KEY_PATH': 'certs/public.pem',
+    'JWT_JWKS_ENDPOINT': 'http://localhost:8000/api/certs/',
 }

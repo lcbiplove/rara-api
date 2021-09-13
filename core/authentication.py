@@ -18,10 +18,12 @@ class JwtTokenAuthentication(BaseAuthentication):
         User = get_user_model()
         authorization_header = request.headers.get('Authorization')
 
-        if not authorization_header:
+        auth = authorization_header.split(' ')
+
+        if not authorization_header or auth[0].lower() != self.keyword.lower():
             return None
         try:
-            jwt_token = authorization_header.split(' ')[1]
+            jwt_token = auth[1]
             payload = jwt_decode_token(jwt_token) 
 
         except jwt.ExpiredSignatureError:
@@ -34,4 +36,22 @@ class JwtTokenAuthentication(BaseAuthentication):
         except User.DoesNotExist:
             raise exceptions.AuthenticationFailed('No such user')
 
+        user = self.authenticate_credentials(payload)
+
         return (user, None)
+
+    def authenticate_credentials(self, payload):
+        """
+        Returns an active user that matches the payload's user id.
+        """
+        User = get_user_model()
+
+        try:
+            user = User.objects.get(pk=payload['user_id'])
+        except User.DoesNotExist:
+            raise exceptions.AuthenticationFailed('No such user')
+
+        return user
+
+    def authenticate_header(self, request):
+        return self.keyword

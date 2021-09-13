@@ -1,10 +1,13 @@
+import json
+from django.http.response import HttpResponse
+import core
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from core.serializers import LoginSerializer
 from core.authentication import JwtTokenAuthentication
+from core.utils import jwt_create_jwk
 
 class LoginView(APIView):
     serializer_class = LoginSerializer
@@ -31,3 +34,13 @@ class UserProfileView(APIView):
             'name': request.user.name,
             'location': request.user.location,
         })
+
+
+class JwksView(APIView):
+
+    def get(self, request, format=None):
+        jwks = jwt_create_jwk()
+        data = {
+            'keys': [jwks]
+        }
+        return HttpResponse(json.dumps(data), 'application/json')
