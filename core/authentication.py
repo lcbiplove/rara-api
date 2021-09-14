@@ -3,8 +3,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.authentication import BaseAuthentication
 from rest_framework import exceptions
 from rara_api import settings 
-from core.utils import jwt_decode_token
-
+from core.utils import jwt_decode_handler
 
 class JwtTokenAuthentication(BaseAuthentication):
     '''
@@ -18,13 +17,13 @@ class JwtTokenAuthentication(BaseAuthentication):
         User = get_user_model()
         authorization_header = request.headers.get('Authorization')
 
-        auth = authorization_header.split(' ')
+        auth = authorization_header and authorization_header.split(' ') 
 
         if not authorization_header or auth[0].lower() != self.keyword.lower():
             return None
         try:
             jwt_token = auth[1]
-            payload = jwt_decode_token(jwt_token) 
+            payload = jwt_decode_handler(jwt_token) 
 
         except jwt.ExpiredSignatureError:
             raise exceptions.AuthenticationFailed('Token expired')

@@ -13,18 +13,20 @@ from rara_api import settings
 DEFAULT_KID = '230498151c214b788dd97f22b85410a5'
 
 
-def jwt_get_payload(user: get_user_model) -> dict:
+def jwt_get_payload(user: get_user_model, exp: datetime = None) -> dict:
     """Returns payload of dictionary from user object
     Args:
         user: User object 
+        exp: Expiry datetime
     """
+    exp = exp or datetime.datetime.utcnow() + settings.MY_JWT_CONF['JWT_EXPIRATION_TIME_DELTA']
     
     payload = {
         'user_id': user.pk,
         'email': user.email,
         'name': user.name,
         'location': user.location,
-        'exp': datetime.datetime.utcnow() + settings.MY_JWT_CONF['JWT_EXPIRATION_TIME_DELTA'],
+        'exp': exp,
         'iat': datetime.datetime.utcnow(),
     }
     return payload
@@ -47,6 +49,17 @@ def jwt_encode_payload(payload: dict) -> str:
         settings.MY_JWT_CONF['JWT_ALGORITHM'],
         headers={'kid': DEFAULT_KID},
     )
+
+def jwt_decode_handler(jwt_token: str) -> dict:
+    """Decides either server act as monolith or as resource server
+    Args:
+        jwt_token: token to be decoded (str)
+    """
+    
+    if settings.MY_JWT_CONF['JWT_DECODE_MONOLITH']:
+        return jwt_decode_token_monolith(jwt_token)
+    return jwt_decode_token(jwt_token)
+
 
 def jwt_decode_token_monolith(jwt_token: str) -> dict:
     """Decodes incoming token and returns payload
