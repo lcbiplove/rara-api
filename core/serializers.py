@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from core.models import UserProfile
 from django.contrib.auth import authenticate
 from core.utils import jwt_get_payload, jwt_encode_payload
+
 
 class LoginSerializer(serializers.Serializer):
     """Serializes user input and authenticate"""
@@ -38,5 +38,3 @@ class LoginSerializer(serializers.Serializer):
         else:
             mssg = 'Include "email" and "password".'
             raise serializers.ValidationError(mssg)
-
-    

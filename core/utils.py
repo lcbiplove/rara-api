@@ -1,5 +1,4 @@
 import datetime
-import urllib
 import jwt
 import json
 from jwt.algorithms import RSAAlgorithm
@@ -16,11 +15,11 @@ DEFAULT_KID = '230498151c214b788dd97f22b85410a5'
 def jwt_get_payload(user: get_user_model, exp: datetime = None) -> dict:
     """Returns payload of dictionary from user object
     Args:
-        user: User object 
+        user: User object
         exp: Expiry datetime
     """
-    exp = exp or datetime.datetime.utcnow() + settings.MY_JWT_CONF['JWT_EXPIRATION_TIME_DELTA']
-    
+    exp = exp or datetime.datetime.utcnow() + \
+        settings.MY_JWT_CONF['JWT_EXPIRATION_TIME_DELTA']
     payload = {
         'user_id': user.pk,
         'email': user.email,
@@ -31,16 +30,17 @@ def jwt_get_payload(user: get_user_model, exp: datetime = None) -> dict:
     }
     return payload
 
+
 def jwt_encode_payload(payload: dict) -> str:
     """Encodes payload with either symmetric or asymmetrically
-    signed keys 
+    signed keys
     Args:
         payload: to be encoded data (dict)
     """
 
-    secret_key =  settings.SECRET_KEY
+    secret_key = settings.SECRET_KEY
     private_key_path = settings.MY_JWT_CONF.get('JWT_PRIVATE_KEY_PATH')
-    if private_key_path :
+    if private_key_path:
         secret_key = open(private_key_path).read()
 
     return jwt.encode(
@@ -50,12 +50,12 @@ def jwt_encode_payload(payload: dict) -> str:
         headers={'kid': DEFAULT_KID},
     )
 
+
 def jwt_decode_handler(jwt_token: str) -> dict:
     """Decides either server act as monolith or as resource server
     Args:
         jwt_token: token to be decoded (str)
     """
-    
     if settings.MY_JWT_CONF['JWT_DECODE_MONOLITH']:
         return jwt_decode_token_monolith(jwt_token)
     return jwt_decode_token(jwt_token)
@@ -95,11 +95,11 @@ def jwt_decode_token_monolith(jwt_token: str) -> dict:
 #         algorithms=[settings.MY_JWT_CONF['JWT_ALGORITHM']]
 #     )
 
+
 def jwt_decode_token(jwt_token: str) -> dict:
     """Decode jwt from jwks endpoint
     Args:
         jwt_token: Token
-    
     https://pyjwt.readthedocs.io/en/latest/usage.html#retrieve-rsa-signing-keys-from-a-jwks-endpoint
     """
 

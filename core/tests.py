@@ -1,4 +1,3 @@
-import json
 import datetime
 from django.test import TestCase
 from django.contrib.auth import get_user_model
@@ -7,9 +6,6 @@ from rest_framework import status
 from django.urls import reverse
 from core.utils import jwt_encode_payload, jwt_get_payload
 
-# def sample_user(email='test@gmail.com', password="testpass"):
-#     """Create a simple user"""
-#     return get_user_model().objects.create_user(email, password)
 
 LOGIN_URL = reverse('login')
 
@@ -17,22 +13,23 @@ PROFILE_URL = reverse('profile')
 
 JWKS_URL = reverse('certs')
 
+
 class LoginTest(TestCase):
     """Login related test"""
 
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(
-            email='biplove@gmail.com', 
-            password='mystrongPassword', 
-            name='Biplove Lamichhane', 
+            email='biplove@gmail.com',
+            password='mystrongPassword',
+            name='Biplove Lamichhane',
             location='Tanahun',
         )
 
     def test_invalid_login(self):
         """Test that login is required to access the endpoint"""
         payload = {
-            'email': 'biplove@gmail.com',  
+            'email': 'biplove@gmail.com',
             'password': '1234',
         }
         res = self.client.post(LOGIN_URL, payload)
@@ -41,7 +38,7 @@ class LoginTest(TestCase):
     def test_valid_login(self):
         """Test for successful login"""
         payload = {
-            'email': 'biplove@gmail.com', 
+            'email': 'biplove@gmail.com',
             'password': 'mystrongPassword',
         }
         res = self.client.post(LOGIN_URL, payload)
@@ -55,16 +52,16 @@ class PrivateProfileTest(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user_dict = {
-            'email': 'biplove@gmail.com', 
-            'password': 'mystrongPassword', 
-            'name': 'Biplove Lamichhane', 
+            'email': 'biplove@gmail.com',
+            'password': 'mystrongPassword',
+            'name': 'Biplove Lamichhane',
             'location': 'Tanahun',
         }
         self.user = get_user_model().objects.create_user(**self.user_dict)
 
     def get_token(self):
         payload = {
-            'email': 'biplove@gmail.com', 
+            'email': 'biplove@gmail.com',
             'password': 'mystrongPassword',
         }
         res = self.client.post(LOGIN_URL, payload)
@@ -113,4 +110,3 @@ class JwksEndpointTest(TestCase):
         res = self.client.get(JWKS_URL).json()
         jwks = res['keys']
         self.assertGreaterEqual(len(jwks), 1)
-    

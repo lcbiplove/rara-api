@@ -1,6 +1,5 @@
 import json
 from django.http.response import HttpResponse
-import core
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from core.serializers import LoginSerializer
 from core.authentication import JwtTokenAuthentication
 from core.utils import jwt_create_jwk
+
 
 class LoginView(APIView):
     serializer_class = LoginSerializer
@@ -22,6 +22,7 @@ class LoginView(APIView):
             })
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class UserProfileView(APIView):
     authentication_classes = [JwtTokenAuthentication]
