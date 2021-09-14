@@ -6,4 +6,6 @@ install:
   - pip install -r requirements.txt
 
 script:
+  - openssl genrsa -out certs/private.pem 4096
+  - openssl rsa -in certs/private.pem -pubout -out certs/public.pem
   - python manage.py test && flake8
