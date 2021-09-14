@@ -21,11 +21,13 @@ openssl rsa -in certs/private.pem -pubout -out certs/public.pem
 ```
 *Note:- private and public key directory will be added to settings.
 
+
 To add the environment variable for *SECRET_KEY*, you can either add the environment variable. Or, you can create a `.env` file in root directory of the project i.e, in same level as `manage.py`. In the `.env` file, you can set environment variable as:
 ```
 SECRET_KEY=YOUR_DJANGO_SECRET_KEY
 ```
 *Note:- If you don't set *SECRET_KEY* environment variable, application will still run with the default *SECRET_KEY*. But, you MUST add your secret key yourself.
+
 
 Now you can migrate to create tables:
 ```
@@ -36,6 +38,7 @@ As our tables are created, you can now create sample user. By:
 python manage.py shell < script.py 
 ```
 *Note:- Sample user have following credentials: `email=tester@gmail.com` and `password=tester`. Or, you can change that from *script.py*
+
 
 Run server and test it out. Also, run test with:
 ```
